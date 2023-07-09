@@ -1,0 +1,9 @@
+#files
+node_modules
+package-lock.json
+.env
+
+#content folder
+tmp/**
+
+#folder
