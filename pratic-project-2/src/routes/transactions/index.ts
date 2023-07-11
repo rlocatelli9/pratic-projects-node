@@ -10,21 +10,25 @@ export async function transactionsRoutes(server: FastifyInstance) {
     return transactions
   })
 
-  server.post('/', async (request) => {
+  server.post('/', async (request, response) => {
     const createTransactionBodySchema = zod.object({
       title: zod.string(),
       amount: zod.number(),
       type: zod.enum(['credit', 'debit']),
     })
-    const body = createTransactionBodySchema.parse(request.body)
+    const { amount, title, type } = createTransactionBodySchema.parse(
+      request.body,
+    )
 
-    const transaction = await knex('transactions')
+    await knex('transactions')
       .insert({
         id: crypto.randomUUID(),
-        ...body,
+        amount,
+        title,
+        type,
       })
       .returning('*')
 
-    return transaction
+    return response.status(201).send()
   })
 }
