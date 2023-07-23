@@ -1,15 +1,5 @@
-import fastify from 'fastify'
-import { parsedEnv } from '../env'
-import { transactionsRoutes } from '../routes/transactions'
-import cookie from '@fastify/cookie'
-
-export const server = fastify()
-
-server.register(cookie)
-
-server.register(transactionsRoutes, {
-  prefix: 'transactions',
-})
+import { parsedEnv } from 'env'
+import { app as server } from 'app'
 
 server
   .listen({

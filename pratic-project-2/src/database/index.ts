@@ -1,5 +1,5 @@
 import { knex as setupKnex, Knex } from 'knex'
-import { parsedEnv } from '../env'
+import { parsedEnv } from 'env'
 
 export const configDatase: Knex.Config = {
   client: parsedEnv.DATABASE_CLIENT,
