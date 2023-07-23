@@ -24,7 +24,7 @@ describe('Transactions routes', () => {
       .send({
         title: 'New transaction',
         amount: 100,
-        type: 'debit',
+        type: 'credit',
       })
       .expect(201)
   })
@@ -80,6 +80,37 @@ describe('Transactions routes', () => {
         title: 'New transaction',
         amount: 200,
         type: 'credit',
+      }),
+    )
+  })
+
+  it('should be able to list a summary of transactions', async () => {
+    const transactionResponse = await request(app.server)
+      .post('/transactions')
+      .send({
+        title: 'New transaction',
+        amount: 500,
+        type: 'credit',
+      })
+
+    const cookies = transactionResponse.get('Set-Cookie')
+
+    await request(app.server)
+      .post('/transactions')
+      .set('Cookie', cookies)
+      .send({
+        title: 'Transação de débito',
+        amount: -200,
+        type: 'debit',
+      })
+
+    const getSummary = await request(app.server)
+      .get('/transactions/summary')
+      .set('Cookie', cookies)
+
+    expect(getSummary.body.summary).toEqual(
+      expect.objectContaining({
+        amount: 300,
       }),
     )
   })
