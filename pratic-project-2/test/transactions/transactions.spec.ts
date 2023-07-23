@@ -15,7 +15,7 @@ describe('Transactions routes', () => {
 
   beforeEach(async () => {
     execSync('npm run knex migrate:rollback --all')
-    execSync('npm run knex migrate:latest ')
+    execSync('npm run knex migrate:latest')
   })
 
   it('should be able to create a new transaction', async () => {
@@ -51,5 +51,36 @@ describe('Transactions routes', () => {
         type: 'credit',
       }),
     ])
+  })
+
+  it('should be able to list specific transactions', async () => {
+    const transactionResponse = await request(app.server)
+      .post('/transactions')
+      .send({
+        title: 'New transaction',
+        amount: 200,
+        type: 'credit',
+      })
+
+    const cookies = transactionResponse.get('Set-Cookie')
+
+    const transactionList = await request(app.server)
+      .get(`/transactions`)
+      .set('Cookie', cookies)
+
+    const transactionId = transactionList.body.transactions[0].id
+
+    const getTransaction = await request(app.server)
+      .get(`/transactions/${transactionId}`)
+      .set('Cookie', cookies)
+      .expect(200)
+
+    expect(getTransaction.body).toEqual(
+      expect.objectContaining({
+        title: 'New transaction',
+        amount: 200,
+        type: 'credit',
+      }),
+    )
   })
 })
