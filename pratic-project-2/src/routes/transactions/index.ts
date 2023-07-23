@@ -58,7 +58,7 @@ export async function transactionsRoutes(server: FastifyInstance) {
       amount: zod.number(),
       type: zod.enum(['credit', 'debit']),
     })
-    const { amount, title, type } = createTransactionBodySchema.parse(
+    let { amount, title, type } = createTransactionBodySchema.parse(
       request.body,
     )
 
@@ -71,6 +71,10 @@ export async function transactionsRoutes(server: FastifyInstance) {
         path: '/',
         maxAge: 1000 * 60 * 60 * 24 * 7, // 7days in miliseconds
       })
+    }
+
+    if (type === 'debit' && !(amount < 0)) {
+      amount = 0 - amount
     }
 
     await knex('transactions')
