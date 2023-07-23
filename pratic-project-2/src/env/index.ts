@@ -3,7 +3,7 @@ import { z as zod } from 'zod'
 
 const envSchema = zod.object({
   NODE_ENV: zod
-    .enum(['development', 'staging', 'production'])
+    .enum(['development', 'test', 'staging', 'production'])
     .default('production'),
   DATABASE_CLIENT: zod.string(),
   DATABASE_URL: zod.string(),
