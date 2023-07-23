@@ -58,7 +58,7 @@ export async function transactionsRoutes(server: FastifyInstance) {
       amount: zod.number(),
       type: zod.enum(['credit', 'debit']),
     })
-    let { amount, title, type } = createTransactionBodySchema.parse(
+    const { amount, title, type } = createTransactionBodySchema.parse(
       request.body,
     )
 
@@ -73,8 +73,16 @@ export async function transactionsRoutes(server: FastifyInstance) {
       })
     }
 
+    if (type === 'credit' && !(amount > 0)) {
+      return response.status(401).send({
+        error: 'This action is not authorized',
+      })
+    }
+
     if (type === 'debit' && !(amount < 0)) {
-      amount = 0 - amount
+      return response.status(401).send({
+        error: 'This action is not authorized',
+      })
     }
 
     await knex('transactions')
