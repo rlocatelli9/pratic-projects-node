@@ -11,9 +11,9 @@ const envSchema = zod.object({
   NODE_ENV: zod
     .enum(['development', 'test', 'staging', 'production'])
     .default('production'),
-  DATABASE_CLIENT: zod.string(),
+  DATABASE_CLIENT: zod.enum(['sqlite', 'pg']),
   DATABASE_URL: zod.string(),
-  PORT: zod.number().default(3333),
+  PORT: zod.coerce.number().default(3333),
 })
 
 export const _env = envSchema.safeParse(process.env)
@@ -23,4 +23,12 @@ if (_env.success === false) {
   throw new Error('Invalid environment variables')
 }
 
-export const parsedEnv = _env.data
+export const parsedEnv = {
+  ..._env.data,
+  DATABASE_CONNECTION:
+    _env.data.DATABASE_CLIENT === 'sqlite'
+      ? {
+          filename: _env.data.DATABASE_URL,
+        }
+      : _env.data.DATABASE_URL,
+}
