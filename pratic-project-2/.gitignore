@@ -1,10 +1,13 @@
-#files
+# dependences
 node_modules
 package-lock.json
+
+# environment
 .env
 .env.test
 
-#content folder
+# content folder
 tmp/**
 
-#folder
+#build
+build
